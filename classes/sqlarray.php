@@ -4,7 +4,7 @@ require_once('functions.php');
 class sqlArray {
 		
 	// Globals define here.	
-	private $db;
+	protected $db;
 	
 	public function __construct() {
 		$this->db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
@@ -15,7 +15,7 @@ class sqlArray {
 		$this->db->close();
 		unset($this->db);
 	}
-	
+
 	public function throwError($message) {
 		echo '<div style="margin: 0 60px 0 60px; padding: 15px; color: red; background: pink; border: 1px solid maroon;">' . $message . '</div>';
 		exit;

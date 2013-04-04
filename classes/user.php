@@ -1,9 +1,5 @@
 <?php
-class user extends sqlArray {
-
-	public $id;
-	protected $tableName 	= "tUser";
-	protected $tableColumns = array('login_name', 'login_password', 'first_name', 'last_name', 'email_address', 'num_logins', 'created_date', 'last_login_date', 'user_level');
+class user extends table {
 
 	public function __construct($user_id = null) {
 		parent::__construct();

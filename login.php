@@ -1,6 +1,7 @@
 <?php
 require_once('config.php');
 require_once(CLASS_URL . 'sqlarray.php');
+require_once(CLASS_URL . 'table.php');
 require_once(CLASS_URL . 'user.php');
 
 if(count($_POST)>0) {
@@ -11,14 +12,11 @@ if(count($_POST)>0) {
 
 	if($user->login()) {
 		echo 'Welcome to TypeFire, ' . $user->first_name . '.';
-		dump($user);
 	} else {
 		echo 'Login failed';
 	}
-
 }
 ?>
-
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
