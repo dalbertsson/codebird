@@ -1,5 +1,6 @@
 <?php
 require_once('config.php');
+require_once(CLASS_URL . 'url.php');
 require_once(CLASS_URL . 'sqlarray.php');
 require_once(CLASS_URL . 'table.php');
 require_once(CLASS_URL . 'user.php');
@@ -11,11 +12,14 @@ if(count($_POST)>0) {
 	$user->login_password 	= $_POST["login_password"];
 
 	if($user->login()) {
-		echo 'Welcome to TypeFire, ' . $user->first_name . '.';
+		echo 'Welcome to SilverCube, ' . $user->first_name . '.';
 	} else {
 		echo 'Login failed';
 	}
 }
+
+echo url::get();
+
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +27,7 @@ if(count($_POST)>0) {
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Typefire</title>
+<title>SilverCube</title>
 
 <style type="text/css">
 	body { font-family: Helvetica, Arial, sans-serif; line-height: 36px; font-size: 14px; font-weight: normal; color: #ccc; }
@@ -36,6 +40,7 @@ if(count($_POST)>0) {
 </style>
 </head>
 <body style="background: #fff; padding: 100px 0 0 0 ;">
+<!--
 	<form method="post" action="">
 	<div class="wrap" style="width: 400px; margin: 0 auto; box-sizing: border-box; border-radius: 4px; background: #fcfcfc; box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1); border: 1px solid #ddd;">
 		<div style="padding: 10px 20px 0 20px;">
@@ -54,5 +59,6 @@ if(count($_POST)>0) {
 		</div>
 	</div>
 	</form>
+-->
 </body>
 </html>

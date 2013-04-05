@@ -11,4 +11,8 @@ define('DB_PASSWORD', 		'root');
 define('DB_NAME', 			'dev');
 define('TABLE_PREFIX', 		'strain_');
 
+# Global variables
+$url = null;
+$url_segments = null;
+
 ?>
