@@ -88,11 +88,10 @@ class sqlArray {
 
 		endforeach;
 
-		// ID is set, let's update the row.
 		if(isset($this->id) && $this->id!="") :
-			$this->dbUpdate($arrData, array("id"=>$this->id));
+			$this->dbUpdate($arrData, array("id"=>$this->id));		// ID is set, let's update the row.
 		else :
-			$this->dbInsert($arrData);
+			$this->dbInsert($arrData); 								// No ID, let's just insert.
 		endif;
 
 	}
