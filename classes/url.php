@@ -1,15 +1,15 @@
 <?php
 
 class url {
+	public $http_host;
 	public $url;
-	public $segments;
+	public $segments = array();
 
-	public static function get() {
+	public function __construct() {
 
-		$base = $_SERVER["REQUEST_URI"];
-
-		return $base;
-
+		$this->http_host 	= $_SERVER["HTTP_HOST"];
+		$this->url 			= $_SERVER["REQUEST_URI"];
+		$this->segments 	= array_filter(explode("/", $this->url));
 	}
 
 }

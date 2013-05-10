@@ -18,8 +18,8 @@ if(count($_POST)>0) {
 	}
 }
 
-echo url::get();
-
+$url = new url();
+var_dump($url);
 ?>
 
 <!DOCTYPE html>
