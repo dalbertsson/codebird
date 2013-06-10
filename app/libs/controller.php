@@ -21,26 +21,31 @@ class controller {
 			// Any arguments passed?
 			if(count($url)>2) {
 				
-				$args = array_shift($url);
-				$args = array_shift($url);
+				$args = $url;
+				unset($args[0]);
+				unset($args[1]);
+				$args = array_values($args);
 			}
-
-			var_dump($args); exit;
 
 			if(file_exists("controllers/$class.php")) {
 
 				require "controllers/$class.php";
 
-				// Instanciate the controller.
+				// Instansiate the controller.
 				$this->controller = new $class;
 				
 				// We've got a specific method to load.
 				if($method) {
 					if(method_exists($this->controller, $method)) {
 						
-
-						$this->controller->$method();	
-
+						if(is_array($args))
+						{
+							call_user_func_array( array($this->controller, $method), $args);
+						}
+						else
+						{
+							$this->controller->$method();
+						}
 
 					} else {
 						
