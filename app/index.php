@@ -4,5 +4,5 @@
 require_once 'config.php';
 require_once LIBS . 'SilverCube.php';
 
-$SilverCube = new SilverCube();
+$SilverCube = new SilverCube;
 $SilverCube->init();

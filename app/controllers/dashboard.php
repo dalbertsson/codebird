@@ -1,14 +1,21 @@
 <?php
+class dashboard extends Controller {
 
-class dashboard extends controller {
-	
 	public function index() {
-		echo 'We are at the dashboard index. <br />';
-	}
+		
+		$data["users"] = array(
+			0 => array(
+				"login" 	=> "daniel",
+				"password" 	=> "rövhatt"
+			),
+			1 => array(
+				"login" 	=> "manekiel",
+				"password" 	=> "skansenkrull"
+			)
+		);
 
-	public function show($amount = 0, $offset = 0) {
-		echo "We're in show <br />";
-		echo "Args: " . $amount . ' / ' . $offset;
+		$this->view->setTitle("Dashboard");
+		$this->view->render('dashboard', $data);
 	}
 
 }
