@@ -14,7 +14,8 @@ class dashboard extends Controller {
 			)
 		);
 
-		$this->view->setTitle("Dashboard");
+		$this->view->title("Dashboard");
+		$this->view->css("extra.css");
 		$this->view->render('dashboard', $data);
 	}
 

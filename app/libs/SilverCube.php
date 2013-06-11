@@ -25,6 +25,10 @@ Class SilverCube {
 		require_once LIBS . 'controller.php';
 		require_once LIBS . 'view.php';
 		require_once LIBS . 'sqlarray.php';
+		require_once LIBS . 'session.php';
+
+		// Initialise a session.
+		session_start();
 
 		$this->url 			= $_SERVER["REQUEST_URI"];
 		$this->url_segments = null;
@@ -131,7 +135,9 @@ Class SilverCube {
 				}
 			
 			// Controller file doesn't exist.
-			} else {
+			}
+			else
+			{
 				require "controllers/FourohFour.php";
 				$controller = new FourohFour;
 				$controller->index();
