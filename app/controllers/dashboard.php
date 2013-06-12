@@ -3,20 +3,12 @@ class dashboard extends Controller {
 
 	public function index() {
 		
-		$data["users"] = array(
-			0 => array(
-				"login" 	=> "daniel",
-				"password" 	=> "rövhatt"
-			),
-			1 => array(
-				"login" 	=> "manekiel",
-				"password" 	=> "skansenkrull"
-			)
-		);
-
-		$this->view->title("Dashboard");
-		$this->view->css("extra.css");
-		$this->view->render('dashboard', $data);
+		$data["content"] 	= array("header" => "Welcome");
+		$data["page"] 		= "dashboard";
+		
+		$this->view->title('Dashboard');
+		
+		$this->view->render('template', $data);
 	}
 
 }

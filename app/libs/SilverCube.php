@@ -7,8 +7,13 @@ Clean this mess up.
 Lots of duplicate code.
 Probably a better way to check the arguments (IN ONE PLACE).
 
-
 ----------------------------------------------------- */
+require_once LIBS . 'controller.php';
+require_once LIBS . 'view.php';
+require_once LIBS . 'sqlarray.php';
+require_once LIBS . 'session.php';
+
+$coreview = new View;
 
 Class SilverCube {
 
@@ -21,11 +26,6 @@ Class SilverCube {
 	private $output;
 
 	public function init() {
-		
-		require_once LIBS . 'controller.php';
-		require_once LIBS . 'view.php';
-		require_once LIBS . 'sqlarray.php';
-		require_once LIBS . 'session.php';
 
 		// Initialise a session.
 		session_start();

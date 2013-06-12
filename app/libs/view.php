@@ -4,17 +4,16 @@ class View {
 
 	public $title;
 	public $css = array("default.css");
+	public $view;
 
-	public function render($view, $data = null, $standalone = false) {
+	public function render($view, $data = null) {
 		
+		global $coreview;
+		$this->view = $coreview;
+
 		if($data && is_array($data)) extract($data);
 		
-		if(!$standalone) require "views/header.php";
-		
-		require "views/$view.php";
-		
-		if(!$standalone) require "views/footer.php";
-	
+		include "views/$view.php";
 	}
 
 	public function title($title) {
