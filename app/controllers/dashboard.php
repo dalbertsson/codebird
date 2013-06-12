@@ -1,5 +1,5 @@
 <?php
-class Dashboard extends Controller {
+class Dashboard extends SilverCube {
 
 	public function index() {
 
@@ -8,7 +8,7 @@ class Dashboard extends Controller {
 		$data["content"] 	= array("header" => "Welcome");
 		$data["page"] 		= "dashboard";
 
-		$this->view->title('Dashboard');
+		$this->view->set_title('Dashboard');
 		$this->view->render('template', $data);
 	}
 

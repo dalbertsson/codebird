@@ -1,9 +1,9 @@
 <?php
 
-class FourohFour extends Controller {
+class FourohFour extends SilverCube {
 	
 	public function index() {
-		$this->view->title("404");
+		$this->view->set_title("404");
 		$this->view->render("404", null, true);
 	}
 

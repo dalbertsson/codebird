@@ -5,19 +5,19 @@ class View {
 	public $active_page;
 	public $title;
 	public $css = array("default.css");
-	public $view;
+
+	public function __construct() {
+		$this->view = $this;
+	}
 
 	public function render($view, $data = null, $extract = false) {
-		
-		global $coreview;
-		$this->view = $coreview;
 
 		if($data and is_array($data) and $extract) extract($data);
 		
 		include "views/$view.php";
 	}
 
-	public function title($title) {
+	public function set_title($title) {
 		$this->title = $title;
 	}
 

@@ -8,23 +8,32 @@ Lots of duplicate code.
 Probably a better way to check the arguments (IN ONE PLACE).
 
 ----------------------------------------------------- */
-require_once LIBS . 'controller.php';
 require_once LIBS . 'view.php';
 require_once LIBS . 'sqlarray.php';
 require_once LIBS . 'table.php';
 require_once LIBS . 'user.php';
 require_once LIBS . 'session.php';
 
-$coreview = new View;
-
 Class SilverCube {
 
 	public $url;
 	public $url_segments;
 
+	public $view;
+
+	public $time_start;
+	public $time_end;
+
 	private $output;
 
+	public function __construct() {
+		$this->view = new view;
+	}
+
 	public function init() {
+
+		// Start the timer. Tick tock tick tock.
+		$this->time_start = microtime(true);
 
 		// Initialise a session.
 		session_start();
@@ -65,7 +74,7 @@ Class SilverCube {
 					if(method_exists($controller, $boot[1])) {
 						
 						// Any arguments passed?
-						$args = null;
+						//$args = null;
 						if(count($boot)>2) {
 							
 							$args = $boot;
@@ -156,6 +165,12 @@ Class SilverCube {
 
 	private function draw() {
 		echo $this->output;
+		
+		$this->time_end = microtime(true);
+
+		echo "\n<!-- ///////////////////////////////////////////////////////////////////////" . "\n";
+		echo "SilverCube executed page in: " . ($this->time_end - $this->time_start)/60 . " seconds.";
+		echo "\n//////////////////////////////////////////////////////////////////////// -->";
 	}
 	
 }
