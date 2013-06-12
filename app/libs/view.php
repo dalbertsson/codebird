@@ -2,16 +2,17 @@
 
 class View {
 
+	public $active_page;
 	public $title;
 	public $css = array("default.css");
 	public $view;
 
-	public function render($view, $data = null) {
+	public function render($view, $data = null, $extract = false) {
 		
 		global $coreview;
 		$this->view = $coreview;
 
-		if($data && is_array($data)) extract($data);
+		if($data and is_array($data) and $extract) extract($data);
 		
 		include "views/$view.php";
 	}

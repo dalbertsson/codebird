@@ -1,4 +1,5 @@
 <ul>
-	<li>Dashboard</li>
-	<li>Posts</li>
+	<?foreach($nav as $menuitem) :?>
+	<li><?=$menuitem?></li>
+	<?endforeach;?>
 </ul>

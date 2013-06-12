@@ -11,6 +11,8 @@ Probably a better way to check the arguments (IN ONE PLACE).
 require_once LIBS . 'controller.php';
 require_once LIBS . 'view.php';
 require_once LIBS . 'sqlarray.php';
+require_once LIBS . 'table.php';
+require_once LIBS . 'user.php';
 require_once LIBS . 'session.php';
 
 $coreview = new View;
@@ -19,9 +21,6 @@ Class SilverCube {
 
 	public $url;
 	public $url_segments;
-
-	/* Contains an instansiated Controller Class. */
-	public $controller;
 
 	private $output;
 
@@ -97,6 +96,7 @@ Class SilverCube {
 						else
 						{
 							// No arguments set, just run the method.
+
 							$controller->$boot[1]();
 						}
 
@@ -130,7 +130,6 @@ Class SilverCube {
 
 				// $boot only contains controller name. Run default method (index)
 				} else { 
-					
 					$controller->index();
 				}
 			
