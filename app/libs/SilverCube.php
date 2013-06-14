@@ -32,12 +32,26 @@ Class SilverCube {
 
 	public function init() {
 
-		// Start the timer. Tick tock tick tock.
+		
+		#-----------------------------------------------------------------------------
+		# Start the timer. Tick tock tick tock.
+		
 		$this->time_start = microtime(true);
+		#-----------------------------------------------------------------------------
+		
 
-		// Initialise a session.
+
+		#-----------------------------------------------------------------------------
+		# Initialise the session
+		
 		session_start();
+		#-----------------------------------------------------------------------------
+		
+		
 
+		#-----------------------------------------------------------------------------
+		# URL parsing
+		
 		$this->url 			= $_SERVER["REQUEST_URI"];
 		$this->url_segments = null;
 
@@ -53,9 +67,17 @@ Class SilverCube {
 		// Load it up.
 		$boot = array_filter(explode("/", $this->url));
 		$boot = array_values($boot);
+		#-----------------------------------------------------------------------------
 
-		// Initialise Output Buffering
+
+		#-----------------------------------------------------------------------------
+		# Initialise output buffering. Handled by the output class later on
+		
 		ob_start();
+		#-----------------------------------------------------------------------------
+
+
+
 
 		if($boot) {
 
