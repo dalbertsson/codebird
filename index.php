@@ -2,6 +2,6 @@
 
 // Use Autoloader later.
 require_once('config.php');
-require_once(LIBS . 'bootstrap.php');
+require_once(LIBS . 'SilverCube.php');
 
-$app = new bootstrap();
+$app = new SilverCube();

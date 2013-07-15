@@ -10,6 +10,6 @@ define('DB_HOST', 			'127.0.0.1');
 define('DB_USER', 			'root');
 define('DB_PASSWORD', 		'root');
 define('DB_NAME', 			'dev');
-define('TABLE_PREFIX', 		'strain_');
+define('TABLE_PREFIX', 		'SilverCube_');
 
 ?>

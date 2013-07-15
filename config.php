@@ -2,6 +2,7 @@
 
 # URLS & PATHS
 define('BASE_URL','');
+define('BASE_PATH', '');
 define('LIBS', BASE_URL . 'libs/');
 
 # DATABASE

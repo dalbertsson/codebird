@@ -1,5 +1,5 @@
 <?php
-class user extends table {
+class User extends table {
 
 	public function __construct($user_id = null) {
 		parent::__construct();
@@ -16,7 +16,6 @@ class user extends table {
 			"first_name"		=> $this->first_name,
 			"last_name"			=> $this->last_name,
 			"email_address"		=> $this->email_address,
-			"first_name"		=> $this->first_name,
 			"user_level"		=> $this->user_level,
 			"email_address" 	=> $this->email_address,
 			"created_date"		=> stdDate()

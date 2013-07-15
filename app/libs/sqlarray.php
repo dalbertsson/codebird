@@ -1,7 +1,7 @@
 <?php
 require_once('functions.php');
 
-class sqlArray {
+class SqlArray {
 		
 	// Globals define here.	
 	protected $db;
@@ -9,6 +9,7 @@ class sqlArray {
 	public function __construct() {
 		$this->db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 		$this->db->query("SET GLOBAL sql_mode='STRICT_ALL_TABLES'");
+		$this->db->set_charset("utf8");
 	}
 	
 	public function __destruct() {
@@ -56,49 +57,10 @@ class sqlArray {
 
 	}
 
-	public function load() {
-		if(isset($this->id) && $this->id!="") :
+	public function dbInsert($arrData, $table = null) {
 
-			$result = $this->dbGetRow(array("id"=>$this->id));
-			foreach($result as $key=>$val) :
-				$this->$key = $val;
-			endforeach;
-
-			return true;
-
-		else :
-			$this->throwError("Cannot load without an ID.");
-		endif;
-	}
-
-	public function store() {
-		$classVars = get_object_vars($this);
-		$ignoreKeys = array("id", "tableName", "tableColumns", "db");
-		$arrData = array();
-
-		foreach($classVars as $key=>$val) :
-
-			if(in_array($key, $ignoreKeys)) continue;
-
-			$this->$key = $val;
-
-			if(in_array($key, $this->tableColumns)) :
-				$arrData[$key] = $val;
-			endif;
-
-		endforeach;
-
-		if(isset($this->id) && $this->id!="") :
-			$this->dbUpdate($arrData, array("id"=>$this->id));		// ID is set, let's update the row.
-		else :
-			$this->dbInsert($arrData); 								// No ID, let's just insert.
-		endif;
-
-	}
-
-	public function dbInsert($arrData) {
-
-		$sql = 'insert into ' . TABLE_PREFIX . $this->tableName . '(';
+		$targetTable = ($table) ? $table : $this->tableName;
+		$sql = 'insert into ' . TABLE_PREFIX . $targetTable . '(';
 		$rows = "";
 		$vals = "";
 
@@ -112,7 +74,7 @@ class sqlArray {
 
 		
 		if($this->db->affected_rows>0) :
-			return true;
+			return $this->db->insert_id;
 		else :
 			$this->throwError($this->db->error);
 		endif;
