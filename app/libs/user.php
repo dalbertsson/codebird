@@ -1,29 +1,8 @@
 <?php
-class User extends table {
+class User extends Object {
 
 	public function __construct($user_id = null) {
 		parent::__construct();
-	}
-
-	public function create() {
-		
-		if(!$this->login_name) 		$this->throwError('Cannot create user without login name');
-		if(!$this->login_password) 	$this->throwError('Cannot create user without login password');
-
-		$arrData = array(
-			"login_name"		=> $this->login_name,
-			"login_password"	=> md5($this->login_password),		// TEMPORARY md5, replace with proper security class later.
-			"first_name"		=> $this->first_name,
-			"last_name"			=> $this->last_name,
-			"email_address"		=> $this->email_address,
-			"user_level"		=> $this->user_level,
-			"email_address" 	=> $this->email_address,
-			"created_date"		=> stdDate()
-		);
-
-		if($this->dbInsert($arrData)) {
-			echo 'inserted'; return true;
-		}
 	}
 
 	public function login() {
@@ -63,11 +42,6 @@ class User extends table {
 
 		$this->dbUpdate($vals, $where);
 
-	}
-
-	public function getAllUsers() {
-		$users = $this->dbGetObjectArray(array(), 'order by login_name asc');
-		return $users;
 	}
 }
 ?>

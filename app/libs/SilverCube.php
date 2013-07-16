@@ -10,7 +10,7 @@ Probably a better way to check the arguments (IN ONE PLACE).
 ----------------------------------------------------- */
 require_once LIBS . 'page.php';
 require_once LIBS . 'sqlarray.php';
-require_once LIBS . 'table.php';
+require_once LIBS . 'Object.php';
 require_once LIBS . 'user.php';
 require_once LIBS . 'session.php';
 require_once LIBS . 'url.php';

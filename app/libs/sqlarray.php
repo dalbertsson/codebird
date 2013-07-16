@@ -5,6 +5,9 @@ class SqlArray {
 		
 	// Globals define here.	
 	protected $db;
+	private $sqlWhere;
+	private $sqlOrderBy;
+	private $sqlLike;   
 	
 	public function __construct() {
 		$this->db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
@@ -25,6 +28,10 @@ class SqlArray {
 	public function realEscape($_) {
 		return $this->db->real_escape_string($_);
 	}
+
+	public function where($key, $val) 	{ $this->sqlWhere[$key] = $val; }
+	public function order($key, $val) 	{ $this->sqlOrderBy[$key] = $val; }
+	public function like($key, $val) 	{ $this->sqlLike[$key] = $val; }
 	
 	public function dbUpdate($arrData, $arrWhere = array()) {
 
@@ -80,33 +87,82 @@ class SqlArray {
 		endif;
 	}
 
-	public function buildSelectSQL($arrWhere, $sqlSuffix = null) {
+	public function buildSelectSQL($table = null) {
 		
-		$sql = 'select ';
-		$columns = '';
-		$wheres = '';
+		$sql 		= 'select ';
+		$columns 	= '';
+		$wheres 	= '';
+		$likes 		= '';
+		$order 		= '';
+		$table 		= ($table) ? TABLE_PREFIX . $table : TABLE_PREFIX . $this->tableName; 
 
-		if(count($arrWhere)>0) :
-			foreach($arrWhere as $key => $val) :
-				$wheres .= $key . '=' . '\'' . $this->realEscape($val) . '\' and ';
+		// Where filters
+		if(is_array($this->sqlWhere)) :
+			foreach($this->sqlWhere as $key => $val) :
+				
+				// Make sure we load from correct table
+				$targetTable = (in_array($key, $this->tableColumns)) ? $table : TABLE_PREFIX . "Object";
+
+				$wheres .= $targetTable . '.' . $key . '=' . '\'' . $this->realEscape($val) . '\' and ';
+			
 			endforeach;
 			$wheres = 'and ' . substr($wheres, 0, -5);
 		endif;
 
+		// Like filters
+		if(is_array($this->sqlLike)) :
+			foreach($this->sqlLike as $key => $val) :
+				
+				// Make sure we load from correct table
+				$targetTable = (in_array($key, $this->tableColumns)) ? $table : TABLE_PREFIX . "Object";
+
+				$likes .= $targetTable . '.' . $key . ' like ' . '\'%' . $this->realEscape($val) . '%\' and ';
+			
+			endforeach;
+			$likes = 'and ' . substr($likes, 0, -5);
+		endif;
+
 		foreach ($this->tableColumns as $column) :
-			$columns .= $column . ',';
+			$columns .= $table . '.' . $column . ',';
+		endforeach;
+		
+		foreach ($this->objectColumns as $column) :
+			$columns .= TABLE_PREFIX . "Object" . '.' . $column . ',';
 		endforeach;
 
 		$sql .= substr($columns, 0, -1);
-		$sql .= ' from ' . TABLE_PREFIX . $this->tableName;
-		$sql .= ' where 1=1 ' . $wheres . ' ' . $sqlSuffix;
+
+		$sql .= ' from ' . $table;
+		
+		// Perform Object Join
+		$sql .= " inner join " . TABLE_PREFIX . "Object on " . $table . '.id = ' . TABLE_PREFIX . "Object.id";
+
+		$sql .= ' where 1=1 ' . $wheres . ' ' . $likes;
+
+		// Order by
+		if(is_array($this->sqlOrderBy)) :
+			$order = ' order by ';
+			foreach($this->sqlOrderBy as $key=>$val) {
+				$targetTable = (in_array($key, $this->tableColumns)) ? $table : TABLE_PREFIX . "Object";
+				$order .= $targetTable . '.' . $key . ' ' . $val . ',';
+			}
+		endif;
+
+		$sql .= substr($order, 0, -1);
+
+		echo $sql;
+
+		// Reset filters
+		$this->sqlWhere 	= null;
+		$this->sqlLike 		= null;
+		$this->sqlOrderBy 	= null;
 
 		return $sql;
 	}
 
-	public function dbGetRow($arrWhere, $sqlSuffix = null) {
+	public function dbGetRow($table = null) {
 
-		$resultSet = $this->db->query($this->buildSelectSQL($arrWhere, $sqlSuffix));
+		$resultSet = $this->db->query($this->buildSelectSQL($table));
 
 		if($this->db->affected_rows>1) $this->throwError('Query returned too many rows.');
 
@@ -117,9 +173,9 @@ class SqlArray {
 		endif;
 	}
 
-	public function dbGetObjectArray($arrWhere, $sqlSuffix) {
+	public function dbGetObjectArray($sqlSuffix, $table = null) {
 
-		$resultSet = $this->db->query($this->buildSelectSQL($arrWhere, $sqlSuffix));
+		$resultSet = $this->db->query($this->buildSelectSQL($sqlSuffix, $table));
 		$data = array();
 		
 		while($row = $resultSet->fetch_object()) {

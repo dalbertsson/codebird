@@ -1,23 +1,29 @@
 <?php
 
-abstract class Table extends sqlArray {
+abstract class Object extends sqlArray {
 	
 	#-----------------------------------------------------------------------------
 	# Array populated with columns from the SilverCube Objects table
 	
-	protected 	$objectColumns = array();
+	protected $objectColumns = array();
 	#-----------------------------------------------------------------------------
 
 	#-----------------------------------------------------------------------------
 	# Defines what table we want to load columns from
 
-	public 		$tableName = null;
+	public $tableName = null;
 	#-----------------------------------------------------------------------------
 
 	#-----------------------------------------------------------------------------
 	# Array populated with columns from the defined table
 	
-	protected 	$tableColumns = array();
+	protected $tableColumns = array();
+	#-----------------------------------------------------------------------------
+
+	#-----------------------------------------------------------------------------
+	# These are the class variables we don't want to process in our inserts/updates
+
+	private $ignoreKeys = array("id", "tableName", "tableColumns", "objectColumns", "db");
 	#-----------------------------------------------------------------------------
 	
 	public 		$id;
@@ -26,7 +32,7 @@ abstract class Table extends sqlArray {
 		
 		parent::__construct();
 
-		$this->tableName = (get_class($this)=="table") ? null : get_class($this);
+		$this->tableName = (get_class($this)=="Object") ? null : get_class($this);
 		
 		if($this->tableName) $this->setTableColumns();
 	}
@@ -63,21 +69,6 @@ abstract class Table extends sqlArray {
 		$this->setTableColumns();
 	}
 
-	public function load() {
-		if(isset($this->id) && $this->id!="") :
-
-			$result = $this->dbGetRow(array("id"=>$this->id));
-			foreach($result as $key=>$val) :
-				$this->$key = $val;
-			endforeach;
-
-			return true;
-
-		else :
-			$this->throwError("Cannot load without an ID.");
-		endif;
-	}
-
 	public function createObject($optData = null) {
 
 		$reqData = array(
@@ -92,16 +83,30 @@ abstract class Table extends sqlArray {
 		return $this->dbInsert($data, "Object");
 	}
 
+	public function updateObject($optData = null) {
+		$reqData = array(
+			"updated_date" 	=> date('Y-m-d H:i:s'),
+			"updated_by"	=> (isset($_SESSION['sc_user_id'])) ? $_SESSION['sc_user_id'] : null
+		);
+
+		// If we have optional data, merge the two arrays.
+		$data = (is_array($optData)) ? array_merge($reqData, $optData) : $reqData;
+		
+		return $this->dbInsert($data, "Object");	
+	}
+
+	#-----------------------------------------------------------------------------
+	# Main function for storing data, always use this one when developing.
+
 	public function store($objData = null) {
 
 		$classVars = get_object_vars($this);
-		$ignoreKeys = array("id", "tableName", "tableColumns", "objectColumns", "db");
 
 		$tableData = array();
 
 		foreach($classVars as $key=>$val) :
 
-			if(in_array($key, $ignoreKeys)) continue;
+			if(in_array($key, $this->ignoreKeys)) continue;
 
 			if(in_array($key, $this->tableColumns)) $tableData[$key] = $val;
 
@@ -109,19 +114,40 @@ abstract class Table extends sqlArray {
 
 		if(isset($this->id) && $this->id!="") :
 			
-			$this->dbUpdate($tableData, array("id"=>$this->id));		// ID is set, let's update the row.
+			// ID is set, let's update the row.
+			$this->dbUpdate($tableData, array("id"=>$this->id));
 		
 		else :
 			
 			// Create the object and store the ID in the data sent to store the table-data.
 			$tableData["id"] = $this->createObject($objData);
 			
-			// Store the table-data
-			$this->dbInsert($tableData);
-
-			return $tableData["id"];
+			// Store the table-data and return ID
+			return $this->dbInsert($tableData);
 		
 		endif;
+	}
+	#-----------------------------------------------------------------------------
+
+	public function load() {
+		if(isset($this->id) && $this->id!="") :
+
+			$this->where('id', $this->id);
+			$result = $this->dbGetRow();
+			
+			foreach($result as $key=>$val) :
+				$this->$key = $val;
+			endforeach;
+
+			return true;
+
+		else :
+			$this->throwError("Cannot load without an ID.");
+		endif;
+	}
+
+	public function loadAll() {
+		return $this->dbGetObjectArray("");
 	}
 
 }

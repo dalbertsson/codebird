@@ -12,16 +12,6 @@ class Dashboard extends SilverCube {
 
 		$this->session->set('sc_user_id', 1);
 
-		$u = new User;
-		$u->login_name = "strain";
-		$u->login_password = "röv";
-		$u->first_name = "Daniel";
-		$u->last_name = "Albertsson";
-		$u->email = "daniel@mortzen.se";
-		$u->level = 10;
-
-		$u->store();
-
 		$this->load_view('template', $data);
 	}
 
