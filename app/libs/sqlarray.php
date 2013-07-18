@@ -1,4 +1,6 @@
 <?php
+if(!defined('BASE_URL')) die('No direct script access');
+
 require_once('functions.php');
 
 class SqlArray {
@@ -51,14 +53,22 @@ class SqlArray {
 		}
 	}
 
-	public function dbUpdate($arrData, $arrWhere = array()) {
+	public function dbUpdate($arrData, $arrWhere = array(), $table = null) {
 
-		$sql 	= 'update ' . TABLE_PREFIX . $this->tableName . ' set ';
+		$table = ($table) ? $table : $this->tableName; 
+		$sql 	= 'update ' . TABLE_PREFIX . $table . ' set ';
 		$vals 	= '';
 		$wheres = '';
 
 		foreach($arrData as $key => $value) :
-			$vals .= $key . '=' . '\'' . $this->realEscape($value) . '\',';
+			
+			if(!$value) continue;
+			
+			if(is_int($value)) {
+				$vals .= $key . '=' . $this->realEscape($value) . ',';
+			} else {
+				$vals .= $key . '=' . '\'' . $this->realEscape($value) . '\',';
+			}
 		endforeach;
 
 		$sql .= substr($vals, 0, -1);
@@ -66,7 +76,11 @@ class SqlArray {
 		if(count($arrWhere)>0) :
 			$wheres = ' where ';
 			foreach($arrWhere as $key => $value) :
-				$wheres .= $key . '=' . '\'' . $this->realEscape($value) . '\' and ';
+				if(is_int($value)) {
+					$wheres .= $key . '=' . $this->realEscape($value) . ' and ';
+				} else {
+					$wheres .= $key . '=' . '\'' . $this->realEscape($value) . '\' and ';
+				}
 			endforeach;
 		endif;
 

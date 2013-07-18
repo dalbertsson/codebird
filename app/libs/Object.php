@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('BASE_URL')) die('No direct script access');
+
 abstract class Object extends sqlArray {
 	
 	#-----------------------------------------------------------------------------
@@ -69,36 +71,53 @@ abstract class Object extends sqlArray {
 		$this->setTableColumns();
 	}
 
-	public function createObject($optData = null) {
+	public function createObject() {
+		
+		$tableData = array();
+		$classVars = get_object_vars($this);
 
-		$reqData = array(
+		$tableData = array(
 			"object_type" 	=> $this->tableName,
 			"created_date" 	=> date('Y-m-d H:i:s'),
 			"created_by"	=> (isset($_SESSION['sc_user_id'])) ? $_SESSION['sc_user_id'] : null
 		);
 
-		// If we have optional data, merge the two arrays.
-		$data = (is_array($optData)) ? array_merge($reqData, $optData) : $reqData;
-		
-		return $this->dbInsert($data, "Object");
+		foreach($classVars as $key=>$val) :
+
+			if(in_array($key, $this->ignoreKeys)) continue;
+
+			if(in_array($key, $this->objectColumns)) $tableData[$key] = $val;
+
+		endforeach;
+
+		return $this->dbInsert($tableData, "Object");
 	}
 
-	public function updateObject($optData = null) {
-		$reqData = array(
-			"updated_date" 	=> date('Y-m-d H:i:s'),
-			"updated_by"	=> (isset($_SESSION['sc_user_id'])) ? $_SESSION['sc_user_id'] : null
+	public function updateObject() {
+
+		$tableData = array();
+		$classVars = get_object_vars($this);
+		
+		$tableData = array(
+			"modified_date" => date('Y-m-d H:i:s'),
+			"modified_by"	=> (isset($_SESSION['sc_user_id'])) ? $_SESSION['sc_user_id'] : null
 		);
 
-		// If we have optional data, merge the two arrays.
-		$data = (is_array($optData)) ? array_merge($reqData, $optData) : $reqData;
-		
-		return $this->dbInsert($data, "Object");	
+		foreach($classVars as $key=>$val) :
+
+			if(in_array($key, $this->ignoreKeys)) continue;
+
+			if(in_array($key, $this->objectColumns)) $tableData[$key] = $val;
+
+		endforeach;
+
+		return $this->dbUpdate($tableData, array("id"=>$this->id), "Object");	
 	}
 
 	#-----------------------------------------------------------------------------
 	# Main function for storing data, always use this one when developing.
 
-	public function store($objData = null) {
+	public function store() {
 
 		$classVars = get_object_vars($this);
 
@@ -114,13 +133,14 @@ abstract class Object extends sqlArray {
 
 		if(isset($this->id) && $this->id!="") :
 			
-			// ID is set, let's update the row.
-			$this->dbUpdate($tableData, array("id"=>$this->id));
+			// ID is set, let's update the rows.
+			$this->updateObject();
+			$this->dbUpdate($tableData, array("id"=>$this->id), null);
 		
 		else :
 			
 			// Create the object and store the ID in the data sent to store the table-data.
-			$tableData["id"] = $this->createObject($objData);
+			$tableData["id"] = $this->createObject();
 			
 			// Store the table-data and return ID
 			return $this->dbInsert($tableData);
@@ -148,6 +168,19 @@ abstract class Object extends sqlArray {
 
 	public function loadAll() {
 		return $this->dbGetObjectArray("");
+	}
+
+	public function delete() {
+		if(isset($this->id) && $this->id!="") :
+
+			$sql = "delete from " . TABLE_PREFIX . "Object where `id` = $this->id"; 				$this->db->query($sql);
+			$sql = "delete from " . TABLE_PREFIX . $this->tableName . " where `id` = $this->id";	$this->db->query($sql);
+
+			return true;
+
+		else :
+			$this->throwError("Cannot delete without an ID.");
+		endif;	
 	}
 
 }

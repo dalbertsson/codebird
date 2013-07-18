@@ -1,6 +1,7 @@
 <?php
+if(!defined('BASE_URL')) die('No direct script access');
 
-class url {
+class Url {
 	public $http_host;
 	public $url;
 	public $segments = array();

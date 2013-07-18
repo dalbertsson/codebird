@@ -1,4 +1,5 @@
 <?php
+if(!defined('BASE_URL')) die('No direct script access');
 
 class Page {
 
