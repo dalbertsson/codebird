@@ -20,7 +20,7 @@ class Url {
 		$this->url = rtrim($this->url, "/");
 
 		// Check if we've got an URL to load, otherwise load START_PAGE.
-		$this->url = ($this->url) ? $this->url : START_PAGE;
+		if(!$this->url) header('location: ' . START_PAGE);
 
 		// Load it up.
 		$this->segments = array_filter(explode("/", $this->url));
@@ -29,6 +29,18 @@ class Url {
 
 	public function get_segment($segment) {
 		return (isset($this->segments[$segment])) ? $this->segments[$segment] : false;
+	}
+
+	public function pagination() {
+
+		global $_GLOBALS;
+		
+		if(count($this->segments) > 1 and is_numeric($this->segments[count($this->segments)-1])) {
+			if($this->segments[count($this->segments)-2]=='page') {
+				$_GLOBALS["pagination"]["page"] = array_pop($this->segments);
+				array_pop($this->segments);
+			}
+		}
 	}
 
 }

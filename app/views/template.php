@@ -7,5 +7,5 @@
 <div style="float: left; width: 80%; min-height: 400px; background: white;">
 	<?php $this->load_view($data["page"], $data, true) ?>
 </div>
-
+<div style="clear: both;"></div>
 <?php $this->load_view('footer') ?>

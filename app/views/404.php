@@ -5,8 +5,7 @@
 	<title>SilverCube | <?=$this->page->title?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta charset="UTF-8" />
-	<link rel="stylesheet" href="/<?=BASE_URL?>files/css/default.css">
-
+	<?=$this->page->print_css()?>
 </head>
 
 <body class="fourohfour">

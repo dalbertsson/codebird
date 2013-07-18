@@ -3,7 +3,7 @@
 # URLS & PATHS
 define('BASE_URL','silvercube/app/');
 define('LIBS', 'libs/');
-define('START_PAGE', 'Dashboard');
+define('START_PAGE', 'dashboard');
 
 # DATABASE
 define('DB_HOST', 			'127.0.0.1');

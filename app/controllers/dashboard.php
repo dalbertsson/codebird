@@ -3,6 +3,8 @@ class Dashboard extends SilverCube {
 
 	public function index() {
 
+		global $_GLOBALS;
+
 		$this->page->set_title('Dashboard');	
 
 		$data["nav"]		= array("Dashboard", "Posts", "Pages", "Users");
@@ -13,7 +15,8 @@ class Dashboard extends SilverCube {
 		$this->session->set('sc_user_id', 1);
 
 		$u = new User;
-		$users = $u->loadAll();
+		$u->paginate(5);
+		$data["users"] = $u->loadAll();
 
 		$this->load_view('template', $data);
 	}

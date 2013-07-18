@@ -11,6 +11,7 @@ class SqlArray {
 	private $sqlOrderBy;
 	private $sqlLike;
 	private $sqlLimit;
+	private $sqlPaging;
 	
 	public function __construct() {
 		$this->db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
@@ -36,6 +37,13 @@ class SqlArray {
 	public function order($key, $val) 	{ $this->sqlOrderBy[$key] = $val; }
 	public function limit($key, $val) 	{ $this->sqlLimit = "$key, $val"; }
 	public function like($key, $val) 	{ $this->sqlLike[$key] = $val; }
+	
+	public function paginate($num) { 
+		global $_GLOBALS;
+		$this->sqlPaging = $num;
+		if(!isset($_GLOBALS["pagination"]["page"])) $_GLOBALS["pagination"]["page"] = 1;
+
+	}
 	
 	public function filter($type, $key, $val) {
 		switch($type) {
@@ -207,6 +215,7 @@ class SqlArray {
 		$order = substr($order, 0, -1);
 		#-----------------------------------------------------------------------------
 
+
 		
 
 		#-----------------------------------------------------------------------------
@@ -218,7 +227,37 @@ class SqlArray {
 		#-----------------------------------------------------------------------------
 
 		
+
+
+		#-----------------------------------------------------------------------------
+		# PAGINATION
+		# Get the total number of results, without the $limit.
+		# Used for the paging object since we need the total number of records.
 		
+		$totSql = "select count(" . TABLE_PREFIX . "Object.id) as paging_count from $table $join where 1=1 $wheres $likes";
+		$count 	= $this->db->query($totSql);
+		$data = null;
+		
+		while($row = $count->fetch_object()) {
+			$data[] = $row;
+		}
+
+		// Set total number of records to the global.
+		if(is_array($data)) $_GLOBALS["pagination"]["count"] = $data[0]->paging_count;
+
+		// Narrow down results based on pagination.
+		if(isset($_GLOBALS["pagination"]["page"]) and $this->sqlPaging>0) {
+			
+			$_GLOBALS["pagination"]["items_per_page"] = $this->sqlPaging;
+
+			$page 	= (int) $_GLOBALS["pagination"]["page"];
+			$offset = ($page==1) ? 0 : (($page-1) * $this->sqlPaging);
+			$limit 	= " limit $offset,$this->sqlPaging";
+		}
+
+		#-----------------------------------------------------------------------------
+
+
 
 		#-----------------------------------------------------------------------------
 		# Build SQL string
@@ -234,25 +273,6 @@ class SqlArray {
 		$sql .= $order;
 		$sql .= $limit;
 		#-----------------------------------------------------------------------------
-
-		
-
-
-		#-----------------------------------------------------------------------------
-		# Get the total number of results, without the $limit.
-		# Used for the paging object since we need the total number of records.
-		
-		$totSql = "select count(" . TABLE_PREFIX . "Object.id) as paging_count from $table $join where 1=1 $wheres $likes";
-		$count 	= $this->db->query($totSql);
-		$data = null;
-		
-		while($row = $count->fetch_object()) {
-			$data[] = $row;
-		}
-
-		if(is_array($data)) $_GLOBALS["paging_count"] = $data[0]->paging_count;
-		#-----------------------------------------------------------------------------
-
 
 		
 

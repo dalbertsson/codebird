@@ -12,6 +12,7 @@ Probably a better way to check the arguments (IN ONE PLACE).
 
 ----------------------------------------------------- */
 require_once LIBS . 'page.php';
+require_once LIBS . 'paging.php';
 require_once LIBS . 'sqlarray.php';
 require_once LIBS . 'Object.php';
 require_once LIBS . 'user.php';
@@ -34,6 +35,7 @@ Class SilverCube {
 		$this->page 	= new Page;
 		$this->url 		= new Url;
 		$this->session 	= new Session;
+		$this->paging 	= new Paging;
 	}
 	#-----------------------------------------------------------------------------
 
@@ -53,6 +55,7 @@ Class SilverCube {
 
 	public function init() {
 
+		global $_GLOBALS;
 		
 		#-----------------------------------------------------------------------------
 		# Start the timer. Tick tock tick tock.
@@ -82,6 +85,7 @@ Class SilverCube {
 			// THIS NEEDS FIXING LATER.
 			// Currently you can't have subfolders in the controllers-folder. That's bad.
 			$class = $this->url->segments[0];
+			$_GLOBALS["url"]["current_page"] = $class;
 
 			if(file_exists("controllers/$class.php")) {
 
@@ -89,7 +93,10 @@ Class SilverCube {
 
 				// Instantiate the controller.
 				$controller = new $class;
-				
+
+				// Check if we're in pagination mode.
+				$this->url->pagination();
+
 				// Method is passed, or it could be an argument for the index-method. Let's check if the method exists.
 				if(count($this->url->segments)>1) {
 					
@@ -126,7 +133,8 @@ Class SilverCube {
 						else
 						{
 							// No arguments set, just run the method.
-							$controller->$this->url->segments[1]();
+							$method = $this->url->segments[1];
+							$controller->$method();
 						}
 
 					} else { // Let's check if the index-method has any arguments.
