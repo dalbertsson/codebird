@@ -6,10 +6,10 @@ class User extends Object {
 	}
 
 	public function login() {
-		$logincheck = $this->dbGetRow(array(
-			'login_name' 		=> $this->login_name,
-			'login_password' 	=> md5($this->login_password)),
-			'order by login_name asc');
+		
+		$this->where('login_name', $this->login_name);
+		$this->where('login_password', md5($this->login_password));
+		$logincheck = $this->dbGetRow();
 
 		if($logincheck) :
 
@@ -19,29 +19,17 @@ class User extends Object {
 
 			$this->prev_login_date = $this->last_login_date;
 
-			$this->updateLogins();
-
 			$this->num_logins 		= (int) $this->num_logins + 1;
 			$this->last_login_date	= stdDate();
 
-			$_SESSION["typefire_logged_in"] = true;
-			$_SESSION["typefire_user_id"] = $this->id;
+			// Store updated number of logins and last login date
+			$this->store();
+
+			$_SESSION["sc_logged_in"] = true;
+			$_SESSION["sc_user_id"] = $this->id;
 
 			return true;
 		endif;
-	}
-
-	public function updateLogins() {
-		$vals = array(
-				"num_logins"		=> (int) $this->num_logins+1,
-				"last_login_date"	=> stdDate()
-			);
-		$where = array(
-				"id" => $this->id
-			);
-
-		$this->dbUpdate($vals, $where);
-
 	}
 }
 ?>

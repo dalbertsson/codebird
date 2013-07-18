@@ -23,7 +23,7 @@ abstract class Object extends sqlArray {
 	#-----------------------------------------------------------------------------
 	# These are the class variables we don't want to process in our inserts/updates
 
-	private $ignoreKeys = array("id", "tableName", "tableColumns", "objectColumns", "db");
+	private $ignoreKeys = array("id", "tableName", "tableColumns", "objectColumns", "db", "sqlWhere", "sqlOrderBy", "sqlLike", "sqlLimit");
 	#-----------------------------------------------------------------------------
 	
 	public 		$id;

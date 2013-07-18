@@ -2,12 +2,13 @@
 require_once('functions.php');
 
 class SqlArray {
-		
+
 	// Globals define here.	
 	protected $db;
 	private $sqlWhere;
 	private $sqlOrderBy;
-	private $sqlLike;   
+	private $sqlLike;
+	private $sqlLimit;
 	
 	public function __construct() {
 		$this->db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
@@ -31,8 +32,25 @@ class SqlArray {
 
 	public function where($key, $val) 	{ $this->sqlWhere[$key] = $val; }
 	public function order($key, $val) 	{ $this->sqlOrderBy[$key] = $val; }
+	public function limit($key, $val) 	{ $this->sqlLimit = "$key, $val"; }
 	public function like($key, $val) 	{ $this->sqlLike[$key] = $val; }
 	
+	public function filter($type, $key, $val) {
+		switch($type) {
+			case "where" :
+				$this->where($key, $val);
+				break;
+			case "order" :
+				$this->order($key, $val);
+				break;
+			case "like" :
+				$this->like($key, $val);
+				break;
+			case "limit" :
+				$this->limit($key, $val);
+		}
+	}
+
 	public function dbUpdate($arrData, $arrWhere = array()) {
 
 		$sql 	= 'update ' . TABLE_PREFIX . $this->tableName . ' set ';
@@ -88,15 +106,20 @@ class SqlArray {
 	}
 
 	public function buildSelectSQL($table = null) {
-		
-		$sql 		= 'select ';
+
+		global $_GLOBALS;
+
 		$columns 	= '';
 		$wheres 	= '';
 		$likes 		= '';
 		$order 		= '';
+		$limit 		= '';
 		$table 		= ($table) ? TABLE_PREFIX . $table : TABLE_PREFIX . $this->tableName; 
 
-		// Where filters
+		
+		#-----------------------------------------------------------------------------
+		# Where filters
+		
 		if(is_array($this->sqlWhere)) :
 			foreach($this->sqlWhere as $key => $val) :
 				
@@ -108,8 +131,13 @@ class SqlArray {
 			endforeach;
 			$wheres = 'and ' . substr($wheres, 0, -5);
 		endif;
+		#-----------------------------------------------------------------------------
 
-		// Like filters
+		
+
+		#-----------------------------------------------------------------------------
+		# Like filters
+		
 		if(is_array($this->sqlLike)) :
 			foreach($this->sqlLike as $key => $val) :
 				
@@ -121,7 +149,14 @@ class SqlArray {
 			endforeach;
 			$likes = 'and ' . substr($likes, 0, -5);
 		endif;
+		#-----------------------------------------------------------------------------
+		
 
+		
+
+		#-----------------------------------------------------------------------------
+		# Columns to select
+		
 		foreach ($this->tableColumns as $column) :
 			$columns .= $table . '.' . $column . ',';
 		endforeach;
@@ -129,17 +164,25 @@ class SqlArray {
 		foreach ($this->objectColumns as $column) :
 			$columns .= TABLE_PREFIX . "Object" . '.' . $column . ',';
 		endforeach;
-
-		$sql .= substr($columns, 0, -1);
-
-		$sql .= ' from ' . $table;
 		
-		// Perform Object Join
-		$sql .= " inner join " . TABLE_PREFIX . "Object on " . $table . '.id = ' . TABLE_PREFIX . "Object.id";
+		$columns = substr($columns, 0, -1);
+		#-----------------------------------------------------------------------------
+		
 
-		$sql .= ' where 1=1 ' . $wheres . ' ' . $likes;
+		
+		
+		#-----------------------------------------------------------------------------
+		# Perform Object Join
+		
+		$join = " inner join " . TABLE_PREFIX . "Object on " . $table . '.id = ' . TABLE_PREFIX . "Object.id";
+		#-----------------------------------------------------------------------------
 
-		// Order by
+
+
+		
+		#-----------------------------------------------------------------------------
+		# Order by
+		
 		if(is_array($this->sqlOrderBy)) :
 			$order = ' order by ';
 			foreach($this->sqlOrderBy as $key=>$val) {
@@ -147,15 +190,66 @@ class SqlArray {
 				$order .= $targetTable . '.' . $key . ' ' . $val . ',';
 			}
 		endif;
+		$order = substr($order, 0, -1);
+		#-----------------------------------------------------------------------------
 
-		$sql .= substr($order, 0, -1);
+		
 
-		echo $sql;
+		#-----------------------------------------------------------------------------
+		# Limit
+		
+		if($this->sqlLimit) :
+			$limit = " limit $this->sqlLimit";
+		endif;
+		#-----------------------------------------------------------------------------
 
-		// Reset filters
+		
+		
+
+		#-----------------------------------------------------------------------------
+		# Build SQL string
+
+		$sql  = 'select ' . TABLE_PREFIX . "Object.id, ";
+		$sql .= $columns;
+		$sql .= ' from ';
+		$sql .= $table;
+		$sql .= $join;
+		$sql .= ' where 1=1 ';
+		$sql .= $wheres;
+		$sql .= $likes;
+		$sql .= $order;
+		$sql .= $limit;
+		#-----------------------------------------------------------------------------
+
+		
+
+
+		#-----------------------------------------------------------------------------
+		# Get the total number of results, without the $limit.
+		# Used for the paging object since we need the total number of records.
+		
+		$totSql = "select count(" . TABLE_PREFIX . "Object.id) as paging_count from $table $join where 1=1 $wheres $likes";
+		$count 	= $this->db->query($totSql);
+		$data = null;
+		
+		while($row = $count->fetch_object()) {
+			$data[] = $row;
+		}
+
+		if(is_array($data)) $_GLOBALS["paging_count"] = $data[0]->paging_count;
+		#-----------------------------------------------------------------------------
+
+
+		
+
+		#-----------------------------------------------------------------------------
+		# Reset filters
+		
 		$this->sqlWhere 	= null;
 		$this->sqlLike 		= null;
 		$this->sqlOrderBy 	= null;
+		$this->sqlLimit 	= null;
+		#-----------------------------------------------------------------------------
 
 		return $sql;
 	}

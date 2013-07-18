@@ -15,6 +15,8 @@ require_once LIBS . 'user.php';
 require_once LIBS . 'session.php';
 require_once LIBS . 'url.php';
 
+$_GLOBALS = array();
+
 Class SilverCube {
 
 	public $time_start;
@@ -36,7 +38,14 @@ Class SilverCube {
 
 		if($data and is_array($data)) extract($data);
 		
-		include "views/$view.php";
+		$view_to_load = "views/$view.php";
+		
+		if(file_exists($view_to_load)) {
+			include $view_to_load;
+		} else {
+			echo "The view $view_to_load doesn't exist."; exit;
+		}
+		
 	}
 
 	public function init() {
@@ -67,6 +76,8 @@ Class SilverCube {
 
 		if($this->url->segments) {
 
+			// THIS NEEDS FIXING LATER.
+			// Currently you can't have subfolders in the controllers-folder. That's bad.
 			$class = $this->url->segments[0];
 
 			if(file_exists("controllers/$class.php")) {
@@ -93,7 +104,7 @@ Class SilverCube {
 
 						if(is_array($args))
 						{
-							// We've got arguments passed in the boot, let's see if the method takes arguments.
+							// We've got arguments passed, let's see if the method takes arguments.
 							$argCheck = new ReflectionMethod($controller, $this->url->segments[1]);
 							$num = $argCheck->getNumberOfParameters();
 
