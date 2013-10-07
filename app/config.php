@@ -1,7 +1,7 @@
 <?php
 
 # URLS & PATHS
-define('BASE_URL','silvercube/app/');
+define('BASE_URL','codebird/app/');
 define('LIBS', 'libs/');
 define('START_PAGE', 'dashboard');
 
