@@ -15,7 +15,7 @@ class Dashboard extends SilverCube {
 		$this->session->set('sc_user_id', 1);
 
 		$u = new User;
-		$u->paginate(5);
+		$u->paginate(7);
 		$data["users"] = $u->loadAll();
 
 		$this->load_view('template', $data);
