@@ -28,7 +28,7 @@ abstract class Object extends sqlArray {
 	private $ignoreKeys = array("id", "tableName", "tableColumns", "objectColumns", "db", "sqlWhere", "sqlOrderBy", "sqlLike", "sqlLimit", "sqlPaging");
 	#-----------------------------------------------------------------------------
 	
-	public 		$id;
+	public $id;
 
 	public function __construct() {
 		

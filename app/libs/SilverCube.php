@@ -62,7 +62,7 @@ Class SilverCube {
 		
 		$this->time_start = microtime(true);
 		#-----------------------------------------------------------------------------
-		
+
 
 
 		#-----------------------------------------------------------------------------
@@ -197,7 +197,7 @@ Class SilverCube {
 		$this->time_end = microtime(true);
 
 		echo "\n<!-- ///////////////////////////////////////////////////////////////////////" . "\n";
-		echo "SilverCube executed page in: " . ($this->time_end - $this->time_start)/60 . " seconds.";
+		echo "CodeBird executed page in: " . ($this->time_end - $this->time_start)/60 . " seconds.";
 		echo "\n//////////////////////////////////////////////////////////////////////// -->";
 	}
 	
